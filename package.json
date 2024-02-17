@@ -1,0 +1,21 @@
+{
+  "name": "tempmantibot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@twurple/auth": "^7.0.4",
+    "@twurple/auth-tmi": "^7.0.4",
+    "dotenv": "^16.4.4",
+    "express": "^4.18.2",
+    "jslint": "^0.12.1",
+    "tmi.js": "^1.8.5",
+    "ws": "^8.14.2"
+  },
+  "type": "module"
+}

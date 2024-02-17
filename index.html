@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>TODOList</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <style>
+        body {
+           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+        }
+        div, p{
+            margin:0;
+        }
+        .todoList{
+            background-color: peachpuff;
+            border: 4px solid #d35400;
+            border-radius: 25px;
+            width: 300px; /* Change width here */
+            height: 350px; /* Change height here */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .title{
+            text-align: center;
+            margin: 0.5rem;
+            color: darkorange;
+        }
+        .separator{
+            height: 2px;
+            width: 100%;
+            background-color: #d35400;
+        }
+        .taskBox{
+            margin: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap:0.25rem;
+            overflow: auto;
+            height: auto;
+        }
+        .task{
+            color: grey;
+        }
+        .username{
+            color:darkorange;
+            font-weight: bold;
+        }
+        .taskBox::-webkit-scrollbar { 
+            display: none;  /* Safari and Chrome */
+        }
+        .taskBox {
+            scrollbar-width: none;  /* Firefox */
+        }
+        .done{
+           text-decoration: line-through 2px;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body style="background-color: green;">
+    <div class="todoList">
+        <h1 class="title">Todo:</h1>
+        <div class="separator"></div>
+        <div class="taskBox" id="box"></div>
+    </div>
+    <script>
+        const scrollingSpeed = 10000 // Number of milisecond to go through the entire list
+
+        const wss = new WebSocket(`ws://localhost:8000`);
+        let todoList = []
+
+        wss.onmessage = function (e) {
+            const data = JSON.parse(e.data)
+            updateTodolist(data)
+        };
+
+        function updateTodolist(data){
+            todoList = data.reverse()
+
+            let tasks = data.map((todo) => {
+                const taskClass = todo.isDone? "task done": "task"
+                return `<p class="${taskClass}"><span class="username">${todo.username}</span>: ${todo.todo}</p>`
+            })
+            $("#box").html(tasks.join(" "))
+
+            updateListLength();
+        }
+        
+        function getTaskHeight(){
+            let height = 0;
+            $("#box > p.task").each(function(){
+                height += $(this).outerHeight()+4;
+            });
+            return height
+        }
+
+        let restartAnimation = true;
+        
+        function scrollToBottom() {
+            $("#box").animate({
+            scrollTop: getTaskHeight()-$("#box").height()
+            }, 10000, scrollToTop);
+        }
+        function scrollToTop() {
+            $("#box").animate({
+                scrollTop: 0
+            }, 10000, scrollToBottom);
+        }
+
+        function updateListLength(){
+            if (getTaskHeight() > $("#box").height()){
+                scrollToBottom();
+            }
+        }
+    </script>
+</body>
+</html>
