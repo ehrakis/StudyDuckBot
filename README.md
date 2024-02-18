@@ -53,3 +53,7 @@ Then start the bot with:
 ```
 node ./bot.js
 ```
+
+
+## License
+[https://choosealicense.com/no-permission/](https://choosealicense.com/no-permission/)
