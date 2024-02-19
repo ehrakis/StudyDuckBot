@@ -122,7 +122,7 @@ function createTodo(target, msg){
                 "isDone": false
             }
         )
-        client.say(target, `${target} Your task ${msg} has been added to the list!`);
+        client.say(target, `${target} Your task "${msg}" has been added to the list!`);
     }
 }
 
