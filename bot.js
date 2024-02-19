@@ -90,6 +90,8 @@ function onMessageHandler (target, context, msg, self) {
     } else if (commandName === '!edit') {
         edit(username, message);
         sendList()
+    } else if (commandName === '!todohelp') {
+        client.say(target, `Commands: !todo (task) to add a task, !done to complete a task, !edit (task) to edit a task.`);
     } else {
         console.log(`* Unknown command ${commandName}`);
     }
