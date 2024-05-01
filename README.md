@@ -4,9 +4,9 @@ Twitch bot made for [Pottle](https://www.twitch.tv/pottlelive).
 This bot aimed to provide multiple feature's to the stream. For now it is only a todo list bot. But I aimed to improve that in the future
 
 ## Features to do
-- [X]Add a help command to display available commands
-- Improve task list display
-- Fix task scrolling
+- [X] Add a help command to display available commands
+- [X] Improve task list display
+- [X] Fix task scrolling
 - Add confettis "!celeb" command for mods
 - Add confettis stream redeem
 - Add hyperfocus redeem
