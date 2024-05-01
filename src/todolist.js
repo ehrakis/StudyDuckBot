@@ -29,7 +29,7 @@ export function createTodo(target, msg, client) {
       `${target} Your task "${msg}" has been added to the list!`
     );
   } else {
-    todohelp(target);
+    todohelp(target, client);
   }
 }
 
