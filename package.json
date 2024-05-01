@@ -13,9 +13,13 @@
     "@twurple/auth-tmi": "^7.0.4",
     "dotenv": "^16.4.4",
     "express": "^4.18.2",
-    "jslint": "^0.12.1",
     "tmi.js": "^1.8.5",
     "ws": "^8.14.2"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@eslint/js": "^9.1.1",
+    "eslint": "^9.1.1",
+    "globals": "^15.1.0"
+  }
 }
