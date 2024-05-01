@@ -62,19 +62,19 @@ function onMessageHandler(target, context, msg, self) {
   // Remove whitespace from chat message
   const commandName = msg.trim().split(" ")[0];
   const message = msg.trim().split(" ").slice(1).join(" ");
-  const username = target.slice(1);
+  const username = context.username;
 
   // If the command is known, let's execute it
   if (commandName === "!todo") {
-    createTodo(username, message, client);
+    createTodo(target, username, message, client);
     sendList();
   } else if (commandName === "!done") {
-    completeTask(username, message, client);
+    completeTask(target, username, message, client);
     sendList();
   } else if (commandName === "!edit") {
-    edit(username, message, client);
+    edit(target, username, message, client);
     sendList();
   } else if (commandName === "!todohelp") {
-    todohelp(target, client);
+    todohelp(target, username, client);
   }
 }
