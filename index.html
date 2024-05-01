@@ -7,69 +7,174 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <style>
         body {
-           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: rgba(0, 0, 0, 0);
         }
-        div, p{
-            margin:0;
+
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
         }
+
+        p {
+            margin: 0;
+        }
+
         .todoList{
-            background-color: peachpuff;
-            border: 4px solid #d35400;
-            border-radius: 25px;
-            width: 300px; /* Change width here */
-            height: 350px; /* Change height here */
+            background-color: #FFFBF9;
+            border: 4px solid #EFD9BF;
+            border-radius: 10px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            width: fit-content;
         }
+
         .title{
             text-align: center;
-            margin: 0.5rem;
-            color: darkorange;
+            margin: -4px;
+            margin-bottom: 0;
+            color: #FFFDF6;
+            border: 4px solid #EFD9BF;
+            border-radius: 10px;
+            background-color: #E0C28C;
         }
+
         .separator{
             height: 2px;
-            width: 100%;
             background-color: #d35400;
         }
+
         .taskBox{
-            margin: 0.5rem;
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            display: flex;
+            align-items: center;
+            background-color: #FFFBF9;
+        }
+
+        .carousel {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carousel__slider {
+            position: relative;
+            display: flex;
+            width: 300px; /* Change width here */
+            height: 250px; /* Change height here */
+            margin: 8px;
+        }
+        
+        .carousel__list {
+            position: absolute;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
-            gap:0.25rem;
-            overflow: auto;
-            height: auto;
+            gap: 10px; /* Has to be specified in pixel because it is used in the javascript */
         }
+
+        .carousel__item{
+            display: flex;
+            gap: 4px;
+        }
+
+        .carousel__item > p {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
         .task{
             color: grey;
         }
+
         .username{
-            color:darkorange;
+            color:#E9CFA3;
             font-weight: bold;
+            display: flex;
+            align-items: center;
         }
+
         .taskBox::-webkit-scrollbar { 
             display: none;  /* Safari and Chrome */
         }
+
         .taskBox {
             scrollbar-width: none;  /* Firefox */
         }
-        .done{
-           text-decoration: line-through 2px;
+
+        .checked{
+            color:#B59273;
         }
+
+        [type=checkbox] {
+            width: 12px;
+            height: 12px;
+            color: dodgerblue;
+            vertical-align: middle;
+            -webkit-appearance: none;
+            appearance: none;
+            background: none;
+            border: 0;
+            outline: 0;
+            flex-grow: 0;
+            border-radius: 2px;
+            background-color: #E9CFA3;
+        }
+        [type=checkbox]::before {
+            content: "";
+            color: transparent;
+            display: block;
+            width: inherit;
+            height: inherit;
+            border-radius: inherit;
+            border: 0;
+            background-color: transparent;
+            background-size: contain;
+        }
+        [type=checkbox]:checked {
+            background-color: #B59273;
+        }
+
+        [type=checkbox]:checked::before {
+            background-image: url('data:image/svg+xml,<svg id="SvgjsSvg1011" width="288" height="288" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs"><defs id="SvgjsDefs1012"></defs><g id="SvgjsG1013"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1792 1792" width="288" height="288"><path d="M1671 566q0 40-28 68l-724 724-136 136q-28 28-68 28t-68-28l-136-136-362-362q-28-28-28-68t28-68l136-136q28-28 68-28t68 28l294 295 656-657q28-28 68-28t68 28l136 136q28 28 28 68z" fill="%23ffffff" class="color000 svgShape"></path></svg></g></svg>');
+        }
+        
+
     </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
-<body style="background-color: green;">
+<body>
     <div class="todoList">
-        <h1 class="title">Todo:</h1>
-        <div class="separator"></div>
-        <div class="taskBox" id="box"></div>
+        <h1 class="title">Tasks !todo</h1>
+        <div class="taskBox">
+            <div class="carousel">
+                <div class="carousel__slider">
+                    <ul class="carousel__list" id="box"></ul>
+                </div>
+            </div>
+        </div>
     </div>
     <script>
-        const scrollingSpeed = 10000 // Number of milisecond to go through the entire list
-
+        
         const wss = new WebSocket(`ws://localhost:8000`);
         let todoList = []
+        let needToCheckSize = true
+        
+        let carouselSlider = document.querySelector(".carousel__slider");
+        let list = document.querySelector(".carousel__list");
+        let list2;
+    
+        const speed = 0.5;
+        const gap = parseInt(window.getComputedStyle(document.querySelector(".carousel__list")).getPropertyValue("gap"));
+        let height = list.scrollHeight + gap;
+        let y = 0;
+        let y2 = height;
 
         wss.onmessage = function (e) {
             const data = JSON.parse(e.data)
@@ -80,40 +185,67 @@
             todoList = data.reverse()
 
             let tasks = data.map((todo) => {
-                const taskClass = todo.isDone? "task done": "task"
-                return `<p class="${taskClass}"><span class="username">${todo.username}</span>: ${todo.todo}</p>`
+                const checked = todo.isDone? " checked": ""
+                return `<li class="carousel__item"><span class="username${checked}"><input type="checkbox"${checked}/>${todo.username}</span><p>${todo.todo}</p></li>`
+                
             })
-            $("#box").html(tasks.join(" "))
-
-            updateListLength();
+            const currentListLength = document.querySelector(".carousel__list").scrollHeight + gap;
+            Array.from(document.getElementsByClassName("carousel__list")).forEach(element => {element.innerHTML = tasks.join("")})
+            updateListHeight(currentListLength)
+            if(needToCheckSize)checkSize()
         }
+
+    
+        function clone() {
+            list2 = list.cloneNode(true);
+            carouselSlider.appendChild(list2);
+            list2.style.top = `${height}px`;
+        }
+
+        function moveFirst() {
+        y -= speed;
+    
+        if (height >= Math.abs(y)) {
+            list.style.top = `${y}px`;
+        } else {
+            y = height;
+        }
+        }
+    
+        function moveSecond() {
+            y2 -= speed;
         
-        function getTaskHeight(){
-            let height = 0;
-            $("#box > p.task").each(function(){
-                height += $(this).outerHeight()+4;
-            });
-            return height
-        }
-
-        let restartAnimation = true;
-        
-        function scrollToBottom() {
-            $("#box").animate({
-            scrollTop: getTaskHeight()-$("#box").height()
-            }, 10000, scrollToTop);
-        }
-        function scrollToTop() {
-            $("#box").animate({
-                scrollTop: 0
-            }, 10000, scrollToBottom);
-        }
-
-        function updateListLength(){
-            if (getTaskHeight() > $("#box").height()){
-                scrollToBottom();
+            if (height >= (Math.abs(y2))) {
+                list2.style.top = `${y2}px`;
+            } else {
+                y2 = height;
             }
         }
+
+        function checkSize(){
+            if(document.querySelector(".carousel__list").scrollHeight > document.querySelector(".carousel__slider").offsetHeight){
+                clone();
+                let a = setInterval(moveFirst, 10);
+                let b = setInterval(moveSecond, 10);
+                needToCheckSize = false
+            }
+        }
+
+        function updateListHeight(currentListLength){
+            height = document.querySelector(".carousel__list").scrollHeight + gap;
+            difference = height - currentListLength
+            if (difference <= 0){
+                return
+            }
+            if (y<y2) {
+                y -= difference;
+            } else {
+                y2 -= difference;
+            }
+        }
+        
+        
+        
     </script>
 </body>
 </html>
