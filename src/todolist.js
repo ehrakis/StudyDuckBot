@@ -34,7 +34,7 @@ export function createTodo(target, username, msg, client) {
 }
 
 export function completeTask(target, username, client) {
-  const task = getUndoneTaskForUser(target);
+  const task = getUndoneTaskForUser(username);
   if (task.length === 0) {
     client.say(
       target,
@@ -50,7 +50,7 @@ export function completeTask(target, username, client) {
 }
 
 export function edit(target, username, msg, client) {
-  const task = getUndoneTaskForUser(target);
+  const task = getUndoneTaskForUser(username);
   if (task.length === 0) {
     client.say(
       target,

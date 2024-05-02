@@ -69,7 +69,7 @@ function onMessageHandler(target, context, msg, self) {
     createTodo(target, username, message, client);
     sendList();
   } else if (commandName === "!done") {
-    completeTask(target, username, message, client);
+    completeTask(target, username, client);
     sendList();
   } else if (commandName === "!edit") {
     edit(target, username, message, client);
