@@ -2,7 +2,7 @@ import { WebSocketServer } from "ws";
 import express from "express";
 import { fileURLToPath } from "url";
 import path from "path";
-import { todolist } from "../widgets/todolist.js";
+import { getList } from "../widgets/todolist.js";
 
 const app = express();
 const sockserver = new WebSocketServer({ port: 8000 });
@@ -30,16 +30,16 @@ function startWebServer() {
 //----------------------- Web socket ----------------------
 function startWebSocket() {
   sockserver.on("connection", (ws) => {
-    ws.send(JSON.stringify(todolist));
+    ws.send(JSON.stringify(getList())); // Initiate todolist on page load
     ws.onerror = function () {
       console.log("websocket error"); // eslint-disable-line no-console
     };
   });
 }
 
-export function sendList() {
+export function sendAction(action) {
   sockserver.clients.forEach((client) => {
-    client.send(JSON.stringify(todolist));
+    client.send(JSON.stringify(action));
   });
 }
 

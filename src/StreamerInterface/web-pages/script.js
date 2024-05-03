@@ -1,11 +1,22 @@
+// -------------------------- Websocket ----------------------
 const wss = new WebSocket(`ws://localhost:8000`);
-let todoList = [];
-let needToCheckSize = true;
 
+const actionTypeToFunction = {
+    "todolist": updateTodolist,
+}
+
+wss.onmessage = function (e) {
+  const action = JSON.parse(e.data);
+  if (action.type in actionTypeToFunction) {
+    actionTypeToFunction[action.type](action.data);
+  }
+};
+
+// -------------------------- TODO list ----------------------
+let todoList = [];
 let carouselSlider = document.querySelector(".carousel__slider");
 let list = document.querySelector(".carousel__list");
 let list2;
-
 const speed = 0.5;
 const gap = parseInt(
   window
@@ -15,11 +26,7 @@ const gap = parseInt(
 let height = list.scrollHeight + gap;
 let y = 0;
 let y2 = height;
-
-wss.onmessage = function (e) {
-  const data = JSON.parse(e.data);
-  updateTodolist(data);
-};
+let needToCheckSize = true;
 
 function updateTodolist(data) {
   todoList = data.reverse();

@@ -1,8 +1,8 @@
 import * as fs from "node:fs/promises";
 import * as tmi from "@twurple/auth-tmi";
 import { RefreshingAuthProvider } from "@twurple/auth";
-import { createTodo, completeTask, edit, todohelp } from "../widgets/todolist.js";
-import { sendList } from "../StreamerInterface/StreamerInterface.js";
+import { getTodoListCommands } from "../widgets/todolist.js";
+import { sendAction } from "../StreamerInterface/StreamerInterface.js";
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -49,7 +49,17 @@ function onConnectedHandler(addr, port) {
   console.log(`* Connected to ${addr}:${port}`); // eslint-disable-line no-console
 }
 
-// -------------------------- TODO List command ----------------------
+// -------------------------- Bot command ----------------------
+
+const commandList = {};
+
+function initiateCommandList() {
+  Object.assign(
+    commandList, 
+    getTodoListCommands(),
+  );
+}
+
 // Called every time a message comes in
 function onMessageHandler(target, context, msg, self) {
   if (self) {
@@ -59,22 +69,17 @@ function onMessageHandler(target, context, msg, self) {
     return;
   } // Ignore message that doesn't start with !
 
-  // Remove whitespace from chat message
+  // Remove whitespace between command and chat message
   const commandName = msg.trim().split(" ")[0];
   const message = msg.trim().split(" ").slice(1).join(" ");
   const username = context.username;
 
-  // If the command is known, let's execute it
-  if (commandName === "!todo") {
-    createTodo(target, username, message, client);
-    sendList();
-  } else if (commandName === "!done") {
-    completeTask(target, username, client);
-    sendList();
-  } else if (commandName === "!edit") {
-    edit(target, username, message, client);
-    sendList();
-  } else if (commandName === "!todohelp") {
-    todohelp(target, username, client);
+  if(commandName in commandList){
+    const action = commandList[commandName](target, username, message, client);
+    if(action){
+      sendAction(action);
+    }
   }
 }
+
+initiateCommandList();
