@@ -2,7 +2,7 @@ import { WebSocketServer } from "ws";
 import express from "express";
 import { fileURLToPath } from "url";
 import path from "path";
-import { todolist } from "../todolist.js";
+import { todolist } from "../widgets/todolist.js";
 
 const app = express();
 const sockserver = new WebSocketServer({ port: 8000 });
@@ -14,7 +14,13 @@ function startWebServer() {
   const __dirname = path.dirname(__filename);
 
   app.get("/", function (req, res) {
-    res.sendFile(path.join(__dirname, "../../index.html"));
+    res.sendFile(path.join(__dirname, "./web-pages/index.html"));
+  });
+  app.get("/style.css", function (req, res) {
+    res.sendFile(path.join(__dirname, "./web-pages/style.css"));
+  });
+  app.get("/script.js", function (req, res) {
+    res.sendFile(path.join(__dirname, "./web-pages/script.js"));
   });
 
   app.listen(port);

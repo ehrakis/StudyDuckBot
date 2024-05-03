@@ -1,7 +1,7 @@
 import * as fs from "node:fs/promises";
 import * as tmi from "@twurple/auth-tmi";
 import { RefreshingAuthProvider } from "@twurple/auth";
-import { createTodo, completeTask, edit, todohelp } from "../todolist.js";
+import { createTodo, completeTask, edit, todohelp } from "../widgets/todolist.js";
 import { sendList } from "../StreamerInterface/StreamerInterface.js";
 import * as dotenv from "dotenv";
 dotenv.config();
